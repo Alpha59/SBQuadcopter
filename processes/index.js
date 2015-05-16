@@ -281,6 +281,7 @@ io.on('connection', function(socket){
 		/*while(emitting){ 
 			; 
 		}*/
+		console.log(data);
 		upsert(data, socket.userId);
 	});
 	socket.on('query', function(data){	
@@ -310,7 +311,7 @@ function sendUpdates(){
 	//removeUpdated();
 	// only do this if someone is online
 	emitting = true;
-	console.log("\t\t\t\t\tRunning SendUpdates function" + " : " + new Date().getTime());
+	//console.log("\t\t\t\t\tRunning SendUpdates function" + " : " + new Date().getTime());
 	if(Object.keys(sockets).length != 0){
 		if(db == null){ console.log("ERROR: SU Database Not Open " + err); }else{
 			db.collection("Subscribers").find({'subscribers' : {$not: {$size:0}}},
@@ -322,7 +323,7 @@ function sendUpdates(){
 								var query = subscription.query;
 								var subscribers = subscription.subscribers;
 								query["info.checked_by.node"] = false;
-								console.log("\t\t\t\t\tSendUpdates: finding Published Docs" + " : " + new Date().getTime());
+								//console.log("\t\t\t\t\tSendUpdates: finding Published Docs" + " : " + new Date().getTime());
 								findPublishedDocs(query, subscribers);
 							}
 						}
@@ -331,7 +332,7 @@ function sendUpdates(){
 			});
 		}
 	}else{
-		console.log("\t\t\t\t\tSendUpdates: Clearing Data, no users online");
+		//console.log("\t\t\t\t\tSendUpdates: Clearing Data, no users online");
 		clearPublished();
 		removeAssets();
 	}
@@ -348,9 +349,9 @@ function findPublishedDocs(query, subscribers){
 				publishedDocs.each(function(err, published){
 					if(err != null){ console.log("ERROR: FPD Iterating Documents " + err);}else{
 						if(published != null){
-							console.log("\t\t\t\t\tFind Published Docs: Emitting Updated Docs " + " : " + new Date().getTime());
+							//console.log("\t\t\t\t\tFind Published Docs: Emitting Updated Docs " + " : " + new Date().getTime());
 							emitUpdates(published, subscribers);
-							console.log("\t\t\t\t\tFind Published Docs: Updating Published Docs " + " : " + new Date().getTime());
+							//console.log("\t\t\t\t\tFind Published Docs: Updating Published Docs " + " : " + new Date().getTime());
 							updatePubDoc(published);
 						}
 					}
@@ -365,7 +366,7 @@ function emitUpdates(published, subscribers){
 	subscribers.forEach(function(subscriber){
 		if(sockets.hasOwnProperty(subscriber["id"])){
 			if(subscriber != null && sockets[subscriber["id"]] != null){
-				console.log("Emited message to: " + sockets[subscriber["id"]].access_token + " : " + new Date().getTime());
+				//console.log("Emited message to: " + sockets[subscriber["id"]].access_token + " : " + new Date().getTime());
 				console.log("\t\t\t\t\tEmited message to: " + sockets[subscriber["id"]].access_token + " : " + new Date().getTime());
 				sockets[subscriber["id"]].emit('updated', published);
 			}
@@ -381,7 +382,7 @@ function updatePubDoc(published){
 		db.collection("Published").remove({"_id":published._id} //{$set:{"info.checked_by.node":true}}
 		,function(err, results){
 			if(err != null){ console.log("ERROR: Query Failed" +err); }else{
-				console.log("\t\t\t\t\tUpdate PubDoc: Removed Published Docs" + " : " + new Date().getTime());
+				//console.log("\t\t\t\t\tUpdate PubDoc: Removed Published Docs" + " : " + new Date().getTime());
 				emitting = false;
 			}
 		});
@@ -396,7 +397,7 @@ function removeUpdated(){
 		db.collection("Published").remove({"info.checked_by.node":true}//, "info.checked_by.python":true}
 		,function(err, results){
 			if(err != null){ console.log("ERROR: RU Query Failed" +err);}else{
-				console.log("\t\t\t\t\tremove Updated: Removed Updated Docs" + " : " + new Date().getTime());
+				//console.log("\t\t\t\t\tremove Updated: Removed Updated Docs" + " : " + new Date().getTime());
 			}
 		});
 	}
@@ -406,21 +407,23 @@ function clearPublished(){
 		db.collection("Published").remove({}//, "info.checked_by.python":true}
 		,function(err, results){
 			if(err != null){ console.log("ERROR: RU Query Failed" +err);}else{
-				console.log("\t\t\t\t\tremove Updated: Removed Updated Docs" + " : " + new Date().getTime());
+				//console.log("\t\t\t\t\tremove Updated: Removed Updated Docs" + " : " + new Date().getTime());
 			}
 		});
 	}
 }
+
 function removeAssets(){
-	if(db == null){ console.log("ERROR: RA Database Not Open" + err); }else{
+/*	if(db == null){ console.log("ERROR: RA Database Not Open" + err); }else{
 		db.collection("Assets").remove({'LuxInfoSection':{'$exists':false}}//, "info.checked_by.python":true}
 		,function(err, results){
 			if(err != null){ console.log("ERROR: RA Query Failed" +err);}else{
-				console.log("Remove Assets: Removed Assets" + " : " + new Date().getTime());
-				console.log("\t\t\t\t\tRemove Assets: Removed Assets" + " : " + new Date().getTime());
+				//console.log("Remove Assets: Removed Assets" + " : " + new Date().getTime());
+				//console.log("\t\t\t\t\tRemove Assets: Removed Assets" + " : " + new Date().getTime());
 			}
 		});
 	}
+*/
 }
 
 setTimeout(function(){
